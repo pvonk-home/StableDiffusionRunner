@@ -1,4 +1,3 @@
-# %%
 import argparse
 import glob
 import os
@@ -6,7 +5,6 @@ from datetime import datetime
 from PIL import Image
 import torch
 from diffusers import StableDiffusionPipeline, StableDiffusionImg2ImgPipeline
-from IPython.display import display
 
 # -----------------------------
 # Helper: Find most recent image
@@ -43,7 +41,7 @@ def generate_image(prompt, init_image_path=None, strength=0.3, width=512, height
         ).to("cuda")
 
         init_image = Image.open(init_image_path).convert("RGB")
-        init_image = init_image.resize((512, 512))
+        init_image = init_image.resize((width, height), Image.LANCZOS)
 
         result = img2img(
             prompt=prompt,
@@ -56,7 +54,7 @@ def generate_image(prompt, init_image_path=None, strength=0.3, width=512, height
 
     else:
         print("Generating from scratch...")
-        result = txt2img(prompt)
+        result = txt2img(prompt, height=height, width=width)
         image = result.images[0]
 
     # Save with timestamp
@@ -65,7 +63,6 @@ def generate_image(prompt, init_image_path=None, strength=0.3, width=512, height
     image.save(output_path)
 
     print(f"Saved: {output_path}")
-    display(image)
 
     return output_path
 
@@ -96,4 +93,3 @@ if __name__ == "__main__":
         width=args.width,
         height=args.height
     )
-# %%
